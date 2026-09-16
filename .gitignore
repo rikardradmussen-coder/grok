@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.jks
+*.keystore
+pc-api-key.json
+.env
+.env.*
+!.env.example
+npm-debug.*
+*.log
