@@ -1,0 +1,16 @@
+{
+  "name": "Project Phoenix",
+  "short_name": "Phoenix",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0B1220",
+  "theme_color": "#0B1220",
+  "description": "Coaching for fathers navigating live family-court and social-care process in England and Wales. They do not replace a solicitor.",
+  "icons": [
+    {
+      "src": "assets/icon/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

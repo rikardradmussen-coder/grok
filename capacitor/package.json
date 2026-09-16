@@ -1,0 +1,31 @@
+{
+  "name": "project-phoenix",
+  "version": "1.0.0",
+  "description": "Project Phoenix — Google Play Capacitor wrapper (web app shell)",
+  "type": "module",
+  "keywords": [
+    "capacitor",
+    "android",
+    "project-phoenix"
+  ],
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "android:bundle": "cd android && ./gradlew bundleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/splash-screen": "^7.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
+    "vite": "^7.3.1"
+  },
+  "author": "Project Phoenix",
+  "license": "UNLICENSED",
+  "private": true
+}
