@@ -9,14 +9,14 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
+      "distribution": "internal"
     },
     "production": {
       "android": {
         "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
       },
       "autoIncrement": true
     }
@@ -26,6 +26,9 @@
       "android": {
         "serviceAccountKeyPath": "./pc-api-key.json",
         "track": "internal"
+      },
+      "ios": {
+        "ascAppId": "REPLACE_AFTER_APP_STORE_CONNECT"
       }
     }
   }

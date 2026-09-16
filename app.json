@@ -24,6 +24,14 @@
     },
     "plugins": [
       "expo-asset"
-    ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.projectphoenix.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "Project Phoenix"
+      }
+    }
   }
 }
