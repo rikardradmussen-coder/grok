@@ -21,19 +21,31 @@ jobs:
       - name: Install Project Dependencies
         run: npm ci
 
+      - name: Require Expo token
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "Missing GitHub secret EXPO_TOKEN — create at expo.dev and add under repo Settings → Secrets"
+            exit 1
+          fi
+
       - name: Setup Expo EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Authenticate with Google Play API
+      - name: Write Google Play service account
         run: |
-          echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}' > pc-api-key.json
+          if [ -z "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" ]; then
+            echo "Missing GOOGLE_PLAY_SERVICE_ACCOUNT — build will run but submit may fail"
+          else
+            echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}' > pc-api-key.json
+          fi
 
       - name: Execute Full Automated Build
-        run: npx eas build --platform android --profile production --non-interactive
+        run: npx eas-cli build --platform android --profile production --non-interactive
 
       - name: Submit to Play Internal track
-        run: npx eas submit --platform android --profile production --latest --non-interactive
+        if: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT != '' }}
+        run: npx eas-cli submit --platform android --profile production --latest --non-interactive
         continue-on-error: true
