@@ -1,0 +1,23 @@
+{
+  "package": {
+    "productName": "pheonix",
+    "version": "1.0.0"
+  },
+  "build": {
+    "distDir": "dist",
+    "devPath": "http://localhost:3000"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.rikardradmussen.pheonix",
+      "targets": ["appimage"],
+      "icon": ["icons/32x32.png", "icons/128x128.png"]
+    },
+    "allowlist": {
+      "all": true
+    },
+    "security": {
+      "csp": null
+    }
+  }
+}
