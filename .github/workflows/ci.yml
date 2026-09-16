@@ -1,0 +1,63 @@
+name: Tauri & Capacitor CI
+on:
+  push:
+    branches: ["tauri-capacitor/app", "main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web (Expo)
+        run: npm run build:web
+
+      - name: Copy web build to Tauri
+        run: |
+          rm -rf src-tauri/dist || true
+          cp -R web-build src-tauri/dist
+
+      - name: Build Tauri (AppImage)
+        run: |
+          cd src-tauri
+          cargo build --release
+          # Packaging requires tauri CLI; install and run
+          npm install --workspace . || true
+          npx tauri build --target appimage || true
+
+      - name: Upload Tauri artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-artifacts
+          path: src-tauri/target/release/bundle
+
+      - name: Build Android AAB (optional, unsigned)
+        run: |
+          cd capacitor
+          npm ci
+          npm run build
+          npx cap sync android
+          cd android
+          ./gradlew bundleRelease || true
+
+      - name: Upload Android AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: capacitor/android/app/build/outputs/bundle/release
