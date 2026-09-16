@@ -3,6 +3,7 @@ name: Automated Google Play Deployment
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -14,11 +15,11 @@ jobs:
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install Project Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Setup Expo EAS
         uses: expo/expo-github-action@v8
