@@ -1,0 +1,8 @@
+[package]
+name = "pheonix"
+version = "1.0.0"
+authors = ["rikardradmussen-coder <rikardradmussen@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+tauri = { version = "1.4.0", features = ["api-all"] }
