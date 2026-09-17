@@ -9,6 +9,9 @@ jobs:
   android:
     name: Android EAS → Play Internal
     runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,7 +21,7 @@ jobs:
       - run: npm ci
       - name: Require Expo token
         run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+          if [ -z "$EXPO_TOKEN" ]; then
             echo "Add GitHub secret EXPO_TOKEN from https://expo.dev"
             exit 1
           fi
@@ -26,21 +29,29 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - name: Write Play service account
+      - name: Write Play service account (optional)
         run: |
-          if [ -n "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}" ]; then
-            echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}' > pc-api-key.json
+          if [ -z "$GOOGLE_PLAY_SERVICE_ACCOUNT" ]; then
+            echo "GOOGLE_PLAY_SERVICE_ACCOUNT not set — build only, skip submit"
+          else
+            printf '%s\n' "$GOOGLE_PLAY_SERVICE_ACCOUNT" > pc-api-key.json
           fi
       - run: npx eas-cli build --platform android --profile production --non-interactive
       - name: Submit Android
-        if: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT != '' }}
-        run: npx eas-cli submit --platform android --profile production --latest --non-interactive
+        run: |
+          if [ ! -f pc-api-key.json ]; then
+            echo "Skipping Play submit — no service account JSON"
+            exit 0
+          fi
+          npx eas-cli submit --platform android --profile production --latest --non-interactive
         continue-on-error: true
 
   ios:
     name: iOS EAS → App Store
     runs-on: ubuntu-latest
-    needs: []
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,7 +61,7 @@ jobs:
       - run: npm ci
       - name: Require Expo token
         run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+          if [ -z "$EXPO_TOKEN" ]; then
             echo "Add GitHub secret EXPO_TOKEN from https://expo.dev"
             exit 1
           fi
@@ -62,6 +73,10 @@ jobs:
         run: npx eas-cli build --platform ios --profile production --non-interactive
         continue-on-error: true
       - name: Submit iOS
-        if: ${{ secrets.EXPO_APPLE_APP_SPECIFIC_PASSWORD != '' }}
-        run: npx eas-cli submit --platform ios --profile production --latest --non-interactive
+        run: |
+          if [ -z "$EXPO_APPLE_APP_SPECIFIC_PASSWORD" ]; then
+            echo "Skipping iOS submit — EXPO_APPLE_APP_SPECIFIC_PASSWORD not set"
+            exit 0
+          fi
+          npx eas-cli submit --platform ios --profile production --latest --non-interactive
         continue-on-error: true
